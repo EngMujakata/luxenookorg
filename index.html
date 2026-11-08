@@ -63,7 +63,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--b);box-shadow:0 0 0 3
 <header class="hdr"><a class="brand" href="#/"><img src="./logo-192.png" alt="" onerror="this.remove()">Luxenook</a><div class="sp"></div><div id="nav" style="display:flex;gap:8px;align-items:center"></div><button class="ib" id="th" aria-label="Switch theme"></button></header>
 <main id="app"></main>
 <script>
-const API="https://script.google.com/macros/s/AKfycbzgOL0PTBy6YPK-NvkNPrJi3BwqXqpWHXC0KI-4hdk8vwmUr5X-JQ6MrV2E_ljbQFg/exec";
+const API="https://script.google.com/macros/library/d/1eCI4LFtNcxBptXCuHSeYG8RFipoeOdzGCcoe5siMTvFSXUVQyxp3h8Kl/5";
 const $=s=>document.querySelector(s),app=$("#app"),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const LS=(k,v)=>{try{return v===undefined?JSON.parse(localStorage.getItem(k)):localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms)),uuid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+""+Math.random();
