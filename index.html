@@ -202,33 +202,7 @@ const doSubmit=W("Marking your exam",async(b,auto)=>{const r=(await api("submitE
  <div style="display:flex;gap:10px;justify-content:center"><a class="btn p" href="#/me">${r.passed?"See certificate":"My learning"}</a>${r.passed?"":`<a class="btn" href="#/exam/${X.id}">Try again</a>`}</div></div>`});
 
 /* certificates */
-function certHtml(c){
-  const f=c.config||{},a=/^#[0-9a-f]{6}$/i.test(f.accent)?f.accent:"#1769e0";
-  const sealSvg=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="48" fill="none" stroke="${a}" stroke-width="2"/><path d="M50 15 L85 80 H15 Z" fill="${a}" opacity="0.1"/><text x="50" y="65" font-size="14" text-anchor="middle" fill="${a}" font-weight="bold" font-family="sans-serif">LUXENOOK</text></svg>`;
-  return `<div class="cert" style="--a:${a};position:relative;overflow:hidden;background:#fff;color:#14213d;border:10px solid var(--a);padding:12px;text-align:center;font-family:serif">
-    <div style="position:absolute;inset:0;background:url('data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 100 100\\'><text x=\\'10\\' y=\\'40\\' font-size=\\'28\\' font-family=\\'cursive\\' fill=\\'#e0e8f5\\' opacity=\\'0.5\\' transform=\\'rotate(-30 50 50)\\'>Certificate</text></svg>') repeat;opacity:0.6;pointer-events:none;z-index:0"></div>
-    <div style="position:relative;z-index:1;border:1px solid #cbd5e1;padding:30px 16px;background:rgba(255,255,255,0.9);">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">
-        <div style="text-align:left;font-size:11px;color:#64748b">
-          <div style="width:60px;height:60px;background:var(--a);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:bold;margin-bottom:8px">L</div>
-          <b>Luxenook</b><br>Online Courses
-        </div>
-        <div style="font-family:monospace;font-size:12px;color:#64748b">${esc(c.number)}</div>
-      </div>
-      <div class="ct" style="font-size:28px;font-weight:800;color:var(--a);letter-spacing:2px;text-transform:uppercase">${esc(f.title)}</div>
-      <p style="margin-top:14px;font-size:14px;color:#64748b">${esc(f.intro)}</p>
-      <div class="cn" style="font-size:28px;font-weight:800;margin:12px 0;border-bottom:2px solid var(--a);display:inline-block;padding:0 22px;color:#14213d">${esc(c.studentName)}</div>
-      <p style="font-size:14px;color:#64748b">${esc(f.body)}</p>
-      <h3 style="font-size:21px;margin:10px 0;color:#14213d">${esc(c.courseTitle)}</h3>
-      ${c.percent!=null?`<p style="font-size:13px;color:#64748b">Final score <b style="color:#14213d">${c.percent}%</b></p>`:""}
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:30px;text-align:left">
-        <div style="font-size:12px;color:#64748b"><b>${fmtD(c.date)}</b><br>Date of award</div>
-        <div style="width:80px;height:80px;background:#fff;border:1px solid #cbd5e1;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:4px">${sealSvg}</div>
-        <div style="text-align:right;font-size:12px;color:#64748b">${c.sig?`<img src="${esc(c.sig)}" alt="Signature" style="max-height:40px;margin-bottom:4px;display:block;margin-left:auto">`:""}<div style="border-top:1px solid #94a3b8;padding-top:4px;min-width:120px"><b>${esc(f.signer)}</b><br>${esc(f.signerTitle)}</div></div>
-      </div>
-      <small style="display:block;margin-top:20px;font-size:10px;color:#94a3b8">${f.footer?esc(f.footer):""}</small>
-    </div>
-  </div>`}
+function certHtml(c){const f=c.config||{},a=/^#[0-9a-f]{6}$/i.test(f.accent)?f.accent:"#1769e0";return`<div class="cert" style="--a:${a}"><div class="ci"><div class="ct">${esc(f.title)}</div><p style="margin-top:14px">${esc(f.intro)}</p><div class="cn">${esc(c.studentName)}</div><p>${esc(f.body)}</p><h3>${esc(c.courseTitle)}</h3>${c.percent!=null?`<p>Final score <b style="color:#14213d">${c.percent}%</b></p>`:""}<div class="cs"><div><b>${fmtD(c.date)}</b><span>Date issued</span></div><div><b>${esc(f.signer)}</b><span>${esc(f.signerTitle)}</span></div></div><small style="display:block;margin-top:20px">Certificate no. ${esc(c.number)}${f.footer?" · "+esc(f.footer):""}</small></div></div>`}
 function viewCert(c){if(!c||!c.config)return toast("Certificate not available yet.");sheet(certHtml(c)+'<button class="btn p full noprint" style="margin-top:12px" onclick="print()">Print or save as PDF</button>',1)}
 
 /* student dashboard */
@@ -241,48 +215,20 @@ async function dash(){if(!S)return authM("in");if(S.role==="admin")return locati
 async function playSaved(id){const o=await idbGet(id);sheet(`<h3>${esc(o.title)}</h3><div class="vw" id="vx"></div>`,1);showMedia($("#vx"),o.meta,o.blob)}
 
 /* admin: every list is paged and lazy */
-const ATABS=[["overview","Overview"],["requests","Access requests"],["courses","Courses"],["learners","Learners"],["certs","Certificates"],["admins","Administrators"],["settings","Settings"]];let RF="pending";
+const ATABS=[["overview","Overview"],["requests","Access requests"],["courses","Courses"],["learners","Learners"],["certs","Certificates"],["admins","Administrators"]];let RF="pending";
 function admin(tab){if(!S||S.role!=="admin")return authM("in");app.innerHTML=`<div class="tabs">${ATABS.map(([k,n])=>`<a class="tab ${k===tab?"on":""}" href="#/admin/${k}">${n}</a>`).join("")}</div><div id="ab"></div>`;
  const lt=(kind,render,o={})=>{$("#ab").innerHTML=`${o.head||""}${o.search?'<div class="srch"><input id="aq" placeholder="Search"></div>':""}<div id="al"></div>`;const run=()=>lazy($("#al"),p=>api("adminList",{kind,page:p,q:$("#aq")?$("#aq").value:"",st:o.st}),render);let d;if($("#aq"))$("#aq").oninput=()=>{clearTimeout(d);d=setTimeout(run,350)};run()};
  const row=(a,b,c)=>`<div class="item"><div class="pi">${a}</div>${b||""}</div>`;
  ({overview:aOverview,
-  requests:()=>lt("requests",r=>row(`<b>${esc(r.learner)}</b> <small>${esc(r.email)}</small><small>${esc(r.course)} · ${money(r.price)} · ${fmtD(r.at)} · <span class="badge ${r.status==="approved"?"g":r.status==="pending"?"w":"r"}">${r.status}</span>${r.hasProof?' · <span class="badge">Proof attached</span>':''}</small>`,`<div style="display:flex;gap:6px">${r.hasProof?`<button class="btn sm" onclick="viewProof('${r.id}')">View proof</button>`:""}${r.status!=="approved"?`<button class="btn p sm" onclick="decide('${r.id}','approved')">Approve</button>`:`<button class="btn d sm" onclick="decide('${r.id}','revoked')">Revoke</button>`}${r.status==="pending"?`<button class="btn d sm" onclick="decide('${r.id}','rejected')">Reject</button>`:""}</div>`),{st:RF,head:`<div class="chips">${[["pending","Pending"],["approved","Approved"],["rejected","Rejected"],["","All"]].map(([k,n])=>`<button class="chip ${RF===k?"on":""}" onclick="RF='${k}';admin('requests')">${n}</button>`).join("")}</div>`}),
+  requests:()=>lt("requests",r=>row(`<b>${esc(r.learner)}</b> <small>${esc(r.email)}</small><small>${esc(r.course)} · ${money(r.price)} · ${fmtD(r.at)} · <span class="badge ${r.status==="approved"?"g":r.status==="pending"?"w":"r"}">${r.status}</span></small>`,`<div style="display:flex;gap:6px">${r.status!=="approved"?`<button class="btn p sm" onclick="decide('${r.id}','approved')">Approve</button>`:`<button class="btn d sm" onclick="decide('${r.id}','revoked')">Revoke</button>`}${r.status==="pending"?`<button class="btn d sm" onclick="decide('${r.id}','rejected')">Reject</button>`:""}</div>`),{st:RF,head:`<div class="chips">${[["pending","Pending"],["approved","Approved"],["rejected","Rejected"],["","All"]].map(([k,n])=>`<button class="chip ${RF===k?"on":""}" onclick="RF='${k}';admin('requests')">${n}</button>`).join("")}</div>`}),
   courses:()=>lt("courses",c=>row(`<b>${esc(c.title)}</b><small>${esc(c.category)} · ${c.lessons} lessons · ${c.enrolled} enrolled · ${money(c.price)} · <span class="badge ${c.status==="published"?"g":"w"}">${esc(c.status)}</span></small>`,`<div style="display:flex;gap:6px"><a class="btn sm" href="#/admin/course/${c.id}">Edit</a><button class="btn d sm" onclick="delCourse('${c.id}')">Delete</button></div>`),{search:1,head:'<div style="display:flex;justify-content:space-between;align-items:center"><h2>Courses</h2><a class="btn p" href="#/admin/course/new">+ New course</a></div>'}),
   learners:()=>lt("learners",l=>row(`<b>${esc(l.name)}</b><small>${esc(l.email)} · joined ${fmtD(l.joined)} · ${l.courses} courses</small>`),{search:1}),
   certs:()=>lt("certs",c=>row(`<b>${esc(c.studentName)}</b> <span class="tag">${esc(c.number)}</span><small>${esc(c.courseTitle)} · ${c.percent}% · ${fmtD(c.date)}</small>`,`<button class="btn d sm" onclick="revokeC('${c.id}')">Revoke</button>`),{search:1,head:'<div style="display:flex;justify-content:space-between;align-items:center"><h2>Certificates</h2><button class="btn p" onclick="issueM()">+ Issue manually</button></div><p class="m">Design, wording and pass mark are set per course: Courses, Edit, Certificate.</p>'}),
-  admins:()=>lt("admins",a=>row(`<b>${esc(a.name)}</b><small>${esc(a.username)} · ${esc(a.role)}</small>`),{head:'<div style="display:flex;justify-content:space-between;align-items:center"><h2>Administrators</h2><span><button class="btn sm" onclick="chPw()">Change my password</button> <button class="btn p" onclick="adminM()">+ Create admin</button></span></div>'}),
-  settings:aSettings
- }[tab]||aOverview)()}
+  admins:()=>lt("admins",a=>row(`<b>${esc(a.name)}</b><small>${esc(a.username)} · ${esc(a.role)}</small>`),{head:'<div style="display:flex;justify-content:space-between;align-items:center"><h2>Administrators</h2><span><button class="btn sm" onclick="chPw()">Change my password</button> <button class="btn p" onclick="adminM()">+ Create admin</button></span></div>'})}[tab]||aOverview)()}
 async function aOverview(){const per=$("#per")?$("#per").value:30;$("#ab").innerHTML=sk(1);const d=(await api("adminStats",{period:per})).stats;
  $("#ab").innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h2>Overview</h2><select id="per" style="width:auto" onchange="aOverview()">${[7,30,90,365].map(n=>`<option value="${n}" ${n==per?"selected":""}>Last ${n} days</option>`).join("")}</select></div>
  <div class="st"><div><b>${d.learners}</b><span>Learners</span></div><div><b>${d.courses}</b><span>Courses</span></div><div><b>${d.pending}</b><span>Pending requests</span></div><div><b>$${d.revenue.toFixed(2)}</b><span>Approved revenue</span></div><div><b>${d.exams}</b><span>Exams taken</span></div><div><b>${d.certificates}</b><span>Certificates</span></div></div>`}
-
-async function aSettings(){app.innerHTML=sk(1);const r=await api("getSettings");const p=r.payment||{ecocash:[],banks:[],notes:""};
- $("#ab").innerHTML=`<div class="card"><h2>Payment Settings</h2><p class="m">These details will be shown to learners when they request access to a paid course.</p>
- <div class="card"><h3>EcoCash Numbers</h3><div id="ecocash-list"></div><button class="btn sm" onclick="addPayment('ecocash')">+ Add EcoCash</button></div>
- <div class="card"><h3>Bank Accounts</h3><div id="banks-list"></div><button class="btn sm" onclick="addPayment('banks')">+ Add Bank</button></div>
- <div class="fg"><label>Payment Notes</label><textarea id="pay-notes" rows="3">${esc(p.notes)}</textarea></div>
- <button class="btn p" onclick="savePayment()">Save Payment Settings</button></div>
- <div class="card"><h2>Certificate Signature</h2><p class="m">Upload a picture of your signature. It will appear on all certificates.</p>
- <div style="display:flex;gap:16px;align-items:center"><div id="sig-preview">${r.signature?`<img src="${esc(r.signature)}" style="max-height:50px;border:1px solid var(--l);padding:4px;background:#fff">`:'<span class="m">No signature uploaded</span>'}</div><input type="file" id="sig-file" accept="image/*" style="flex:1"></div>
- <button class="btn p" style="margin-top:10px" onclick="saveSignature()">Upload Signature</button></div>`;
- window.PAY = p;
- drawPayList('ecocash'); drawPayList('banks')}
-
-function drawPayList(type){const list=$("#"+type+"-list"); const p=window.PAY;
- if(!p[type]) p[type]=[];
- list.innerHTML=p[type].map((item,i)=>{
-   if(type==='ecocash') return `<div class="item"><input placeholder="Number" value="${esc(item.number||'')}" oninput="window.PAY.${type}[${i}].number=this.value" style="flex:1;margin:0"><input placeholder="Name" value="${esc(item.name||'')}" oninput="window.PAY.${type}[${i}].name=this.value" style="flex:1;margin:0"><button class="btn sm d" onclick="window.PAY.${type}.splice(${i},1);drawPayList('${type}')">×</button></div>`;
-   else return `<div class="item" style="flex-wrap:wrap"><input placeholder="Bank" value="${esc(item.bank||'')}" oninput="window.PAY.${type}[${i}].bank=this.value" style="flex:1;margin:0;min-width:100px"><input placeholder="Account No." value="${esc(item.account||'')}" oninput="window.PAY.${type}[${i}].account=this.value" style="flex:1;margin:0;min-width:100px"><input placeholder="Account Name" value="${esc(item.name||'')}" oninput="window.PAY.${type}[${i}].name=this.value" style="flex:1;margin:0;min-width:100px"><input placeholder="Branch" value="${esc(item.branch||'')}" oninput="window.PAY.${type}[${i}].branch=this.value" style="flex:1;margin:0;min-width:100px"><button class="btn sm d" onclick="window.PAY.${type}.splice(${i},1);drawPayList('${type}')">×</button></div>`;
- }).join("")}
-
-const addPayment=type=>{window.PAY[type].push(type==='ecocash'?{number:'',name:''}:{bank:'',account:'',name:'',branch:''});drawPayList(type)};
-const savePayment=W("Saving settings",async()=>{await api("saveSettings",{payment:window.PAY});toast("Payment settings saved.")});
-const saveSignature=W("Uploading signature",async(b)=>{const f=$("#sig-file").files[0];if(!f)throw"Choose an image file.";const u=await upFile("_settings",f,true,b,0,90,"Uploading signature");await api("saveSettings",{signature:u.url});toast("Signature saved.");aSettings()});
-
 const decide=W("Updating",async(b,id,status)=>{await api("decideEnrollment",{id,status});toast("Updated.");admin("requests")});
-const viewProof=W("Loading proof",async()=>{const id=arguments[1];const r=await api("getProof",{id});const isImg=r.mime.startsWith("image/");sheet(`<h3>Proof of Payment</h3>${r.note?`<p><b>Learner's note:</b> ${esc(r.note)}</p>`:""}<div class="vw" style="aspect-ratio:auto;height:60vh;background:#fff;border:1px solid var(--l)">${isImg?`<img src="data:${r.mime};base64,${r.data}" style="object-fit:contain;width:100%;height:100%">`:`<iframe src="data:${r.mime};base64,${r.data}" style="width:100%;height:100%"></iframe>`}</div>`,1)});
-
 const delCourse=id=>confirm("Delete this course, its lessons, exam and enrolments? This cannot be undone.")&&W("Deleting course",async()=>{await api("deleteCourse",{id});toast("Course deleted.");admin("courses")})();
 const revokeC=id=>confirm("Revoke this certificate?")&&W("Revoking",async()=>{await api("revokeCertificate",{id});admin("certs")})();
 const issueM=W("Loading",async()=>{const o=(await api("adminList",{kind:"opts"})).items;const s=sheet(`<h3>Issue certificate</h3><div class="fg"><label>Learner email</label><input id="ie"></div><div class="fg"><label>Course</label><select id="ic">${o.map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join("")}</select></div><div class="fg"><label>Score to show (%)</label><input id="ip" type="number" value="100"></div><button class="btn p full" id="ik">Issue</button>`);
@@ -343,7 +289,7 @@ function eCert(){const c=E.course,f=c.certConfig,fl=(k,l)=>`<div class="fg"><lab
  <div class="fr">${fl("footer","Footer note (optional)")}<div class="fg"><label>Accent colour</label><input id="c_accent" type="color" value="${esc(f.accent)}" oninput="certPrev()" style="height:44px;padding:4px"></div></div>
  <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px"><input type="checkbox" id="c_show" ${c.showScore?"checked":""} onchange="certPrev()"> Show the learner's percentage on the certificate</label><p class="m">Pass mark is ${c.passMark}% (change it on the Exam tab).</p><button class="btn p" onclick="saveCert()">Save certificate</button></div><div class="card"><div class="m" style="margin-bottom:8px">Preview</div><div id="cprev"></div></div>`;certPrev()}
 const certCfg=()=>Object.fromEntries(["title","intro","body","signer","signerTitle","footer","accent"].map(k=>[k,val("c_"+k)]));
-const certPrev=()=>{$("#cprev").innerHTML=certHtml({studentName:"Student Name",courseTitle:E.course.title||"Course title",number:"LUX-0000-2026-0000",date:Date.now(),percent:$("#c_show").checked?85:null,config:certCfg(),sig:E.signature})};
+const certPrev=()=>{$("#cprev").innerHTML=certHtml({studentName:"Student Name",courseTitle:E.course.title||"Course title",number:"LUX-0000-2026-0000",date:Date.now(),percent:$("#c_show").checked?85:null,config:certCfg()})};
 const saveCert=W("Saving certificate",async()=>{await api("saveCourse",{course:{id:E.id,certConfig:certCfg(),showScore:$("#c_show").checked}});toast("Certificate saved.");editor(E.id)});
 
 nav();route();
